@@ -21,8 +21,8 @@ fn main() {
             exit(0);
         }
         let next_move = ChessMove::from_san(&game.current_position(), &input);
-        if next_move.is_ok() {
-            game.make_move(next_move.unwrap());
+        if let Ok(next_move) = next_move{
+            game.make_move(next_move);
             game.make_move(eng.next_move(&game));
         } else {
             println!("Not a legal move!");
