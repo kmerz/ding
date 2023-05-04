@@ -1,28 +1,16 @@
 use std::process::exit;
 
-use chess::{Game, ChessMove, MoveGen};
-use rand::Rng;
-
-pub struct Random { }
-
-trait Engine {
-    fn next_move(&self, game: &Game) -> ChessMove;
-}
-
-impl Engine for Random {
-    fn next_move(&self, game: &Game) -> ChessMove {
-        let iterable = MoveGen::new_legal(&game.current_position());
-        let move_count = iterable.len();
-        let choosen_move_idx = rand::thread_rng().gen_range(0..move_count);
-        iterable.enumerate().find(|c| c.0 == choosen_move_idx).unwrap().1
-    }
-}
+use chess::{Game, ChessMove};
 
 mod ui;
+mod engine;
+
+use crate::engine::Engine;
+use engine::RandomEng;
 
 fn main() {
     let mut game = Game::new();
-    let eng = Random {};
+    let eng = RandomEng {};
 
     while game.result().is_none() {
         ui::print_board(&game.current_position());
@@ -42,5 +30,3 @@ fn main() {
     }
     println!("Game finished");
 }
-
-
