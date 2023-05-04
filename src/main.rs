@@ -14,7 +14,7 @@ impl Engine for Random {
         let iterable = MoveGen::new_legal(&game.current_position());
         let move_count = iterable.len();
         let choosen_move_idx = rand::thread_rng().gen_range(0..move_count);
-        return iterable.enumerate().find(|c| c.0 == choosen_move_idx).unwrap().1;
+        iterable.enumerate().find(|c| c.0 == choosen_move_idx).unwrap().1
     }
 }
 

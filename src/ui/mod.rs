@@ -17,7 +17,7 @@ pub fn print_board(board: &Board) {
     const ROWS: i32 = 8;
     let mut counter = 1; 
     let board_fen_string = board.to_string();
-    let positions = board_fen_string.split(" ").next().unwrap();
+    let positions = board_fen_string.split(' ').next().unwrap();
     for position in positions.chars() {
         if position.is_numeric() {
             let empty_fields = (position.to_string()).parse::<i16>().unwrap();
@@ -27,14 +27,14 @@ pub fn print_board(board: &Board) {
         } else if position == '/' {
             let row = ROWS - counter;
             print!("\n{} ", row); 
-            counter = counter + 1;
+            counter += 1;
         } else {
             let fig = lookup_figure(position);
             print!("{} ", fig);
         }
     }
 
-    print!("\n");
+    println!();
 }
 
 fn lookup_figure(current: char) -> &'static str {
@@ -67,5 +67,5 @@ pub fn read_str() -> String {
         input.pop();
     }
 
-    return input;
+    input
 }
