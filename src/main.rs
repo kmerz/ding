@@ -23,10 +23,16 @@ fn main() {
         let next_move = ChessMove::from_san(&game.current_position(), &input);
         if let Ok(next_move) = next_move{
             game.make_move(next_move);
-            game.make_move(eng.next_move(&game));
+            if let Some(next_move) = eng.next_move(&game) {
+              game.make_move(next_move);
+            } else {
+                // Game Over - AI has no legal move left
+                break;
+            }
         } else {
             println!("Not a legal move!");
         }
     }
-    println!("Game finished");
+    ui::print_board(&game.current_position());
+    println!("Game Over!");
 }
