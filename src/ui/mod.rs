@@ -1,4 +1,4 @@
-use chess::{Board};
+use chess::{Board, Game, GameResult};
 use std::io::{stdin,stdout,Write};
 
 pub fn print_board(board: &Board) {
@@ -68,4 +68,18 @@ pub fn read_str() -> String {
     }
 
     input
+}
+
+pub fn print_result(game: &Game) {
+    if game.result().is_some() {
+        match game.result().unwrap() {
+            GameResult::WhiteCheckmates => println!("White checkmates Black"),
+            GameResult::WhiteResigns => println!("White resigns"),
+            GameResult::BlackCheckmates => println!("Black checkmates White"),
+            GameResult::BlackResigns => println!("Black resigns"),
+            GameResult::Stalemate => println!("Stalemate"),
+            GameResult::DrawAccepted => println!("Draw accepted"),
+            GameResult::DrawDeclared => println!("Draw declared"),
+        }
+    }
 }

@@ -34,5 +34,6 @@ fn main() {
         }
     }
     ui::print_board(&game.current_position());
+    ui::print_result(&game);
     println!("Game Over!");
 }
