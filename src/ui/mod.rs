@@ -123,3 +123,20 @@ fn print_help() -> Command {
     println!("e4 Qh5xf7 or 0-0");
     Command::Success
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::ui;
+    use chess::{Game};
+    use std::str::FromStr;
+
+    #[test]
+    fn parse_start_new_game_test() {
+        let mut game = Game::from_str(
+            "rnbqk1nr/pp1p1ppp/3b4/2p1p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1")
+            .unwrap();
+        ui::parse_command("new", &mut game);
+        assert_eq!(game.current_position().to_string(),
+            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    }
+}
