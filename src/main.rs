@@ -1,6 +1,8 @@
 use std::process::exit;
+use std::str::FromStr;
 
 use chess::{Game, ChessMove};
+use clap::{arg, command};
 
 mod ui;
 mod engine;
@@ -9,7 +11,21 @@ use crate::engine::Engine;
 use engine::RandomEng;
 
 fn main() {
+    let matches = command!()
+        .arg(arg!(-f --fen <String> "Start the game from a fen string") .required(false))
+        .get_matches();
+
     let mut game = Game::new();
+    if let Some(fen) = matches.get_one::<String>("fen") {
+        let game_from_fen = Game::from_str(fen);
+        if !game_from_fen.is_ok() {
+            println!("Could not find a valid game from fen, will start a new one!");
+            game = Game::new();
+        } else {
+            game = game_from_fen.unwrap();
+        }
+    }
+
     let eng = RandomEng {};
 
     while game.result().is_none() {
