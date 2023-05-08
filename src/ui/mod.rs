@@ -96,12 +96,12 @@ pub fn print_result(game: &Game) {
 pub fn parse_command(input: &str, game: &Game) -> Command {
     match input {
         "quit!" => exit(0),
-        "print" => print_fen(&game),
+        "print" => print_fen(game),
         _ => Command::Unknown,
     }
 }
 
 fn print_fen(game: &Game) -> Command {
-    println!("FEN: {}", game.current_position().to_string());
+    println!("FEN: {}", game.current_position());
     Command::Success
 }

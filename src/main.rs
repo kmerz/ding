@@ -16,12 +16,11 @@ fn main() {
 
     let mut game = Game::new();
     if let Some(fen) = matches.get_one::<String>("fen") {
-        let game_from_fen = Game::from_str(fen);
-        if !game_from_fen.is_ok() {
+        if let Ok(game_from_fen) = Game::from_str(fen) {
+            game = game_from_fen;
+        } else {
             println!("Could not find a valid game from fen, will start a new one!");
             game = Game::new();
-        } else {
-            game = game_from_fen.unwrap();
         }
     }
 
@@ -32,7 +31,7 @@ fn main() {
 
         print!("> ");
         let input = ui::read_str();
-        let command = ui::parse_command(&input.as_str(), &game);
+        let command = ui::parse_command(input.as_str(), &game);
         if command == ui::Command::Success {
             continue;
         }
