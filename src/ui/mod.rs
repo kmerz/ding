@@ -1,5 +1,12 @@
 use chess::{Board, Game, GameResult};
 use std::io::{stdin,stdout,Write};
+use std::process::exit;
+ 
+#[derive(PartialEq)]
+pub enum Command {
+    Success,
+    Unknown,
+}
 
 pub fn print_board(board: &Board) {
     //  A B C D E F G H
@@ -82,4 +89,19 @@ pub fn print_result(game: &Game) {
             GameResult::DrawDeclared => println!("Draw declared"),
         }
     }
+}
+
+
+
+pub fn parse_command(input: &str, game: &Game) -> Command {
+    match input {
+        "quit!" => exit(0),
+        "print" => print_fen(&game),
+        _ => Command::Unknown,
+    }
+}
+
+fn print_fen(game: &Game) -> Command {
+    println!("FEN: {}", game.current_position().to_string());
+    Command::Success
 }

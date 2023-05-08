@@ -1,4 +1,3 @@
-use std::process::exit;
 use std::str::FromStr;
 
 use chess::{Game, ChessMove};
@@ -33,8 +32,9 @@ fn main() {
 
         print!("> ");
         let input = ui::read_str();
-        if input.eq("quit!") {
-            exit(0);
+        let command = ui::parse_command(&input.as_str(), &game);
+        if command == ui::Command::Success {
+            continue;
         }
         let next_move = ChessMove::from_san(&game.current_position(), &input);
         if let Ok(next_move) = next_move{
