@@ -27,11 +27,12 @@ fn main() {
     let eng = RandomEng {};
 
     while game.result().is_none() {
+        println!();
         ui::print_board(&game.current_position());
 
         print!("> ");
         let input = ui::read_str();
-        let command = ui::parse_command(input.as_str(), &game);
+        let command = ui::parse_command(input.as_str(), &mut game);
         if command == ui::Command::Success {
             continue;
         }
@@ -48,6 +49,7 @@ fn main() {
             println!("Not a legal move!");
         }
     }
+    println!();
     ui::print_board(&game.current_position());
     ui::print_result(&game);
     println!("Game Over!");

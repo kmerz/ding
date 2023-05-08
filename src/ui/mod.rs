@@ -93,15 +93,33 @@ pub fn print_result(game: &Game) {
 
 
 
-pub fn parse_command(input: &str, game: &Game) -> Command {
+pub fn parse_command(input: &str, game: &mut Game) -> Command {
     match input {
         "quit!" => exit(0),
         "print" => print_fen(game),
+        "help"  => print_help(),
+        "new"   => start_new_game(game),
         _ => Command::Unknown,
     }
 }
 
 fn print_fen(game: &Game) -> Command {
     println!("FEN: {}", game.current_position());
+    Command::Success
+}
+
+fn start_new_game(game: &mut Game) -> Command {
+    *game = Game::new();
+    Command::Success
+}
+
+fn print_help() -> Command {
+    println!("Following Commands are avaiable:\n");
+    println!("quit! - To quit the game immediately");
+    println!("print - Print the current board in fen notation");
+    println!("help - Print this help message");
+    println!();
+    println!("For a move use SAN notation:");
+    println!("e4 Qh5xf7 or 0-0");
     Command::Success
 }
