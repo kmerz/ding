@@ -7,7 +7,7 @@ mod ui;
 mod engine;
 
 use crate::engine::Engine;
-use engine::RandomEng;
+use engine::CountingEng;
 
 fn main() {
     let matches = command!()
@@ -24,7 +24,7 @@ fn main() {
         }
     }
 
-    let eng = RandomEng {};
+    let eng = CountingEng {};
 
     while game.result().is_none() {
         println!();
