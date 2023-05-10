@@ -24,6 +24,7 @@ fn main() {
         }
     }
 
+    // TODO: Make this selectable
     let eng = CountingEng {};
 
     while game.result().is_none() {

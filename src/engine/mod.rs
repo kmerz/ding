@@ -41,16 +41,19 @@ impl Engine for CountingEng {
             let result = value_black - value_white;
             valued_moves.insert(next_move, result);
         }
+        // TODO: Turn this into debug logging
         for (next_move, value) in valued_moves.iter() {
             println!("move: {}, value: {}", next_move, value);
         }
         let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
             .unwrap().0;
+        // TODO: Turn this into debug logging
         println!("next_move: {}", next_move);
         Some(next_move)
     }
 }
 
+// TODO: Add tests
 fn count_pieces(board: &Board, color: &Color) -> i32 {
     let mut sum: i32 = 0;
     for sq in ALL_SQUARES.iter() {
