@@ -32,8 +32,8 @@ fn main() {
     let engine = matches.get_one::<String>("engine").unwrap_or(&default_engine).as_str();
 
     let eng: Box::<dyn Engine> = match engine {
-        "random" => Box::new(RandomEng::default()),
-        _ => Box::new(CountingEng::default()),
+        "random" => Box::<RandomEng>::default(),
+        _ => Box::<CountingEng>::default(),
     };
 
     while game.result().is_none() {
