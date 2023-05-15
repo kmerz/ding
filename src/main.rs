@@ -8,10 +8,14 @@ mod engine;
 
 use crate::engine::Engine;
 use engine::CountingEng;
+use engine::RandomEng;
 
 fn main() {
     let matches = command!()
-        .arg(arg!(-f --fen <String> "Start the game from a fen string") .required(false))
+        .arg(arg!(-f --fen <String> "Start the game from a fen string")
+             .required(false))
+        .arg(arg!(-e --engine <String> "Choose the Random Engine: random or counting. Counting is default")
+             .required(false))
         .get_matches();
 
     let mut game = Game::new();
@@ -24,8 +28,13 @@ fn main() {
         }
     }
 
-    // TODO: Make this selectable
-    let eng = CountingEng {};
+    let default_engine = "counting".to_string();
+    let engine = matches.get_one::<String>("engine").unwrap_or(&default_engine).as_str();
+
+    let eng: Box::<dyn Engine> = match engine {
+        "random" => Box::new(RandomEng::default()),
+        _ => Box::new(CountingEng::default()),
+    };
 
     while game.result().is_none() {
         println!();

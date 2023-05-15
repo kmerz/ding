@@ -2,11 +2,11 @@ use chess::{Game, ChessMove, MoveGen, Board, ALL_SQUARES, Color, Piece};
 use std::collections::HashMap;
 use rand::Rng;
 
-
 pub trait Engine {
     fn next_move(&self, game: &Game) -> Option<ChessMove>;
 }
 
+#[derive(Default)]
 pub struct RandomEng { }
 
 impl Engine for RandomEng {
@@ -21,8 +21,8 @@ impl Engine for RandomEng {
     }
 }
 
+#[derive(Default)]
 pub struct CountingEng {}
-
 
 impl Engine for CountingEng {
     fn next_move(&self, game: &Game) -> Option<ChessMove> {
