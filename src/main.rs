@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use clap::{arg, command};
-use env_logger;
+
 
 use chess::{Game, ChessMove};
 
