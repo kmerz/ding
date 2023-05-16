@@ -9,3 +9,5 @@ edition = "2021"
 chess = "3.2.0"
 clap = { version = "4.2.7", features = ["cargo"] }
 rand = "0.8.5"
+log = "0.4"
+env_logger = "0.9"

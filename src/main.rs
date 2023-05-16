@@ -1,7 +1,9 @@
 use std::str::FromStr;
 
-use chess::{Game, ChessMove};
 use clap::{arg, command};
+use env_logger;
+
+use chess::{Game, ChessMove};
 
 mod ui;
 mod engine;
@@ -11,6 +13,8 @@ use engine::CountingEng;
 use engine::RandomEng;
 
 fn main() {
+    env_logger::init();
+
     let matches = command!()
         .arg(arg!(-f --fen <String> "Start the game from a fen string")
              .required(false))

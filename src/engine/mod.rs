@@ -1,6 +1,7 @@
 use chess::{Game, ChessMove, MoveGen, Board, ALL_SQUARES, Color, Piece};
 use std::collections::HashMap;
 use rand::Rng;
+use log::{info};
 
 pub trait Engine {
     fn next_move(&self, game: &Game) -> Option<ChessMove>;
@@ -43,12 +44,12 @@ impl Engine for CountingEng {
         }
         // TODO: Turn this into debug logging
         for (next_move, value) in valued_moves.iter() {
-            println!("move: {}, value: {}", next_move, value);
+            info!("move: {}, value: {}", next_move, value);
         }
         let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
             .unwrap().0;
         // TODO: Turn this into debug logging
-        println!("next_move: {}", next_move);
+        info!("next_move: {}", next_move);
         Some(next_move)
     }
 }
