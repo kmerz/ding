@@ -23,6 +23,46 @@ impl Engine for RandomEng {
 }
 
 #[derive(Default)]
+pub struct MinMaxEng {}
+
+impl Engine for MinMaxEng {
+    fn next_move(&self, game: &Game) -> Option<ChessMove> {
+        let board = game.current_position();
+        let iterable = MoveGen::new_legal(&board);
+        let move_count = iterable.len();
+        if move_count == 0 {
+            return None;
+        }
+        let mut valued_moves = HashMap::new();
+        for next_move in iterable {
+            let new_board = &board.make_move_new(next_move);
+            let result_my_move = inspect_move(&board, false);
+
+            let opp_iterable = MoveGen::new_legal(&new_board);
+            let mut valued_opp_moves: HashMap<ChessMove, i32> = HashMap::new();
+            for next_opp_move in opp_iterable {
+                let new_opp_board = new_board.make_move_new(next_opp_move);
+                let result_opp_move = inspect_move(&new_opp_board, true);
+                valued_opp_moves.insert(next_move, result_opp_move);
+            }
+
+            let result_op_move = *valued_opp_moves.iter().max_by_key(|entry| entry.1)
+                .unwrap().1;
+            
+            let result = result_my_move - result_op_move;
+            valued_moves.insert(next_move, result);
+        }
+        for (next_move, value) in valued_moves.iter() {
+            info!("move: {}, value: {}", next_move, value);
+        }
+        let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
+            .unwrap().0;
+        info!("next_move: {}", next_move);
+        Some(next_move)
+    }
+}
+
+#[derive(Default)]
 pub struct CountingEng {}
 
 impl Engine for CountingEng {
@@ -35,26 +75,32 @@ impl Engine for CountingEng {
         }
         let mut valued_moves = HashMap::new();
         for next_move in iterable {
-            let value_black = count_pieces(&board.make_move_new(next_move),
-                &Color::Black);
-            let value_white = count_pieces(&board.make_move_new(next_move),
-                &Color::White);
-            let result = value_black - value_white;
+            let new_board = &board.make_move_new(next_move);
+            let result = inspect_move(new_board, false);
             valued_moves.insert(next_move, result);
         }
-        // TODO: Turn this into debug logging
         for (next_move, value) in valued_moves.iter() {
             info!("move: {}, value: {}", next_move, value);
         }
         let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
             .unwrap().0;
-        // TODO: Turn this into debug logging
         info!("next_move: {}", next_move);
         Some(next_move)
     }
 }
 
-// TODO: Add tests
+fn inspect_move(board: &Board, invert: bool) -> i32 {
+    let value_black = count_pieces(&board, &Color::Black);
+    let value_white = count_pieces(&board, &Color::White);
+    let result: i32;
+    if invert {
+        result = value_black - value_white;
+    } else {
+        result = value_white - value_black;
+    }
+    result
+}
+
 fn count_pieces(board: &Board, color: &Color) -> i32 {
     let mut sum: i32 = 0;
     for sq in ALL_SQUARES.iter() {

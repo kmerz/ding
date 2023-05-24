@@ -11,6 +11,7 @@ mod engine;
 use crate::engine::Engine;
 use engine::CountingEng;
 use engine::RandomEng;
+use engine::MinMaxEng;
 
 fn main() {
     env_logger::init();
@@ -18,7 +19,7 @@ fn main() {
     let matches = command!()
         .arg(arg!(-f --fen <String> "Start the game from a fen string")
              .required(false))
-        .arg(arg!(-e --engine <String> "Choose the Random Engine: random or counting. Counting is default")
+        .arg(arg!(-e --engine <String> "Choose the Random Engine: random, counting and minmax. Counting is default")
              .required(false))
         .get_matches();
 
@@ -37,6 +38,7 @@ fn main() {
 
     let eng: Box::<dyn Engine> = match engine {
         "random" => Box::<RandomEng>::default(),
+        "minmax" => Box::<MinMaxEng>::default(),
         _ => Box::<CountingEng>::default(),
     };
 
