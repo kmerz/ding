@@ -38,7 +38,7 @@ impl Engine for MinMaxEng {
             let new_board = &board.make_move_new(next_move);
             let result_my_move = inspect_move(&board, false);
 
-            let opp_iterable = MoveGen::new_legal(&new_board);
+            let opp_iterable = MoveGen::new_legal(new_board);
             let mut valued_opp_moves: HashMap<ChessMove, i32> = HashMap::new();
             for next_opp_move in opp_iterable {
                 let new_opp_board = new_board.make_move_new(next_opp_move);
@@ -90,14 +90,13 @@ impl Engine for CountingEng {
 }
 
 fn inspect_move(board: &Board, invert: bool) -> i32 {
-    let value_black = count_pieces(&board, &Color::Black);
-    let value_white = count_pieces(&board, &Color::White);
-    let result: i32;
-    if invert {
-        result = value_black - value_white;
+    let value_black = count_pieces(board, &Color::Black);
+    let value_white = count_pieces(board, &Color::White);
+    let result: i32 = if invert {
+        value_black - value_white
     } else {
-        result = value_white - value_black;
-    }
+        value_white - value_black
+    };
     result
 }
 
