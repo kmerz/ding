@@ -1,6 +1,31 @@
-use chess::{Board, Game, GameResult};
+use chess::{Board, Game, GameResult, ChessMove};
 use std::io::{stdin,stdout,Write};
 use std::process::exit;
+
+use crate::engine::Player;
+
+#[derive(Default)]
+pub struct Human {}
+
+impl Player for Human {
+    fn next_move(&self, game: &Game) -> Option<ChessMove> {
+        println!();
+        print_board(&game.current_position());
+
+        print!("> ");
+        let input = read_str();
+        let command = parse_command(input.as_str(), game);
+        if command == Command::Success {
+            return None;
+        }
+        let next_move = ChessMove::from_san(&game.current_position(), &input);
+        if next_move.is_err() {
+            println!("Not a legal move!");
+            return None;
+        }
+        Some(next_move.unwrap())
+    }
+}
  
 #[derive(PartialEq)]
 pub enum Command {
@@ -93,23 +118,17 @@ pub fn print_result(game: &Game) {
 
 
 
-pub fn parse_command(input: &str, game: &mut Game) -> Command {
+pub fn parse_command(input: &str, game: &Game) -> Command {
     match input {
         "quit!" => exit(0),
         "print" => print_fen(game),
         "help"  => print_help(),
-        "new"   => start_new_game(game),
         _ => Command::Unknown,
     }
 }
 
 fn print_fen(game: &Game) -> Command {
     println!("FEN: {}", game.current_position());
-    Command::Success
-}
-
-fn start_new_game(game: &mut Game) -> Command {
-    *game = Game::new();
     Command::Success
 }
 
@@ -122,21 +141,4 @@ fn print_help() -> Command {
     println!("For a move use SAN notation:");
     println!("e4 Qh5xf7 or 0-0");
     Command::Success
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::ui;
-    use chess::{Game};
-    use std::str::FromStr;
-
-    #[test]
-    fn parse_start_new_game_test() {
-        let mut game = Game::from_str(
-            "rnbqk1nr/pp1p1ppp/3b4/2p1p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1")
-            .unwrap();
-        ui::parse_command("new", &mut game);
-        assert_eq!(game.current_position().to_string(),
-            "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    }
 }

@@ -3,12 +3,13 @@ use std::str::FromStr;
 use clap::{arg, command};
 
 
-use chess::{Game, ChessMove};
+use chess::{Game};
 
 mod ui;
 mod engine;
 
-use crate::engine::Engine;
+use crate::engine::Player;
+use crate::ui::Human;
 use engine::CountingEng;
 use engine::RandomEng;
 use engine::MinMaxEng;
@@ -19,7 +20,9 @@ fn main() {
     let matches = command!()
         .arg(arg!(-f --fen <String> "Start the game from a fen string")
              .required(false))
-        .arg(arg!(-e --engine <String> "Choose the Random Engine: random, counting and minmax. Counting is default")
+        .arg(arg!(-w --white <String> "Choose between human, random, counting, minmax. Default is human")
+             .required(false))
+        .arg(arg!(-b --black <String> "Choose between human, random, counting, minmax. Default is minmax")
              .required(false))
         .get_matches();
 
@@ -33,37 +36,36 @@ fn main() {
         }
     }
 
-    let default_engine = "counting".to_string();
-    let engine = matches.get_one::<String>("engine").unwrap_or(&default_engine).as_str();
+    let default_white = "human".to_string();
+    let default_black = "minmax".to_string();
 
-    let eng: Box::<dyn Engine> = match engine {
+    let white = matches.get_one::<String>("white").unwrap_or(&default_white).as_str();
+    let black = matches.get_one::<String>("black").unwrap_or(&default_black).as_str();
+
+    let player_white: Box::<dyn Player> = match white {
         "random" => Box::<RandomEng>::default(),
         "minmax" => Box::<MinMaxEng>::default(),
+        "counting" => Box::<CountingEng>::default(),
+        _ => Box::<Human>::default(),
+    };
+
+    let player_black: Box::<dyn Player> = match black {
+        "random" => Box::<RandomEng>::default(),
+        "minmax" => Box::<MinMaxEng>::default(),
+        "human" => Box::<Human>::default(),
         _ => Box::<CountingEng>::default(),
     };
 
     while game.result().is_none() {
-        println!();
-        ui::print_board(&game.current_position());
-
-        print!("> ");
-        let input = ui::read_str();
-        let command = ui::parse_command(input.as_str(), &mut game);
-        if command == ui::Command::Success {
-            continue;
-        }
-        let next_move = ChessMove::from_san(&game.current_position(), &input);
-        if let Ok(next_move) = next_move{
+        let next_move = player_white.next_move(&game);
+        if let Some(next_move) = next_move {
             game.make_move(next_move);
-            if let Some(next_move) = eng.next_move(&game) {
+            if let Some(next_move) = player_black.next_move(&game) {
               game.make_move(next_move);
             } else {
-                // Game Over - AI has no legal move left
                 break;
             }
-        } else {
-            println!("Not a legal move!");
-        }
+        } 
     }
     println!();
     ui::print_board(&game.current_position());

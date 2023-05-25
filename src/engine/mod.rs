@@ -3,14 +3,14 @@ use std::collections::HashMap;
 use rand::Rng;
 use log::{info};
 
-pub trait Engine {
+pub trait Player {
     fn next_move(&self, game: &Game) -> Option<ChessMove>;
 }
 
 #[derive(Default)]
 pub struct RandomEng { }
 
-impl Engine for RandomEng {
+impl Player for RandomEng {
     fn next_move(&self, game: &Game) -> Option<ChessMove> {
         let iterable = MoveGen::new_legal(&game.current_position());
         let move_count = iterable.len();
@@ -25,7 +25,7 @@ impl Engine for RandomEng {
 #[derive(Default)]
 pub struct MinMaxEng {}
 
-impl Engine for MinMaxEng {
+impl Player for MinMaxEng {
     fn next_move(&self, game: &Game) -> Option<ChessMove> {
         let board = game.current_position();
         let iterable = MoveGen::new_legal(&board);
@@ -65,7 +65,7 @@ impl Engine for MinMaxEng {
 #[derive(Default)]
 pub struct CountingEng {}
 
-impl Engine for CountingEng {
+impl Player for CountingEng {
     fn next_move(&self, game: &Game) -> Option<ChessMove> {
         let board = game.current_position();
         let iterable = MoveGen::new_legal(&board);
