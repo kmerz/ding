@@ -104,9 +104,9 @@ fn get_other_color(color: &Color) -> Color {
 }
 
 fn inspect_move(board: &Board, my_color: &Color, invert: bool) -> i32 {
-    let opp_color = get_other_color(&my_color);
+    let opp_color = get_other_color(my_color);
     let value_opp = count_pieces(board, &opp_color);
-    let value_mine = count_pieces(board, &my_color);
+    let value_mine = count_pieces(board, my_color);
     let result: i32 = if invert {
         value_opp - value_mine
     } else {
