@@ -10,9 +10,10 @@ mod ui;
 
 use crate::engine::Player;
 use crate::ui::Human;
-use engine::CountingEng;
-use engine::MinMaxEng;
-use engine::RandomEng;
+
+use engine::counting::CountingEng;
+use engine::minmax::MinMaxEng;
+use engine::random::RandomEng;
 
 fn main() {
     env_logger::init();
