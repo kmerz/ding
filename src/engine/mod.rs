@@ -1,17 +1,17 @@
 use chess::{Game, ChessMove, MoveGen, Board, ALL_SQUARES, Color, Piece};
 use std::collections::HashMap;
 use rand::Rng;
-use log::{info};
+use log::{info, debug};
 
 pub trait Player {
-    fn next_move(&self, game: &Game) -> Option<ChessMove>;
+    fn next_move(&self, game: &Game, my_color: Color) -> Option<ChessMove>;
 }
 
 #[derive(Default)]
 pub struct RandomEng { }
 
 impl Player for RandomEng {
-    fn next_move(&self, game: &Game) -> Option<ChessMove> {
+    fn next_move(&self, game: &Game, _my_color: Color) -> Option<ChessMove> {
         let iterable = MoveGen::new_legal(&game.current_position());
         let move_count = iterable.len();
         if move_count == 0 {
@@ -26,7 +26,7 @@ impl Player for RandomEng {
 pub struct MinMaxEng {}
 
 impl Player for MinMaxEng {
-    fn next_move(&self, game: &Game) -> Option<ChessMove> {
+    fn next_move(&self, game: &Game, my_color: Color) -> Option<ChessMove> {
         let board = game.current_position();
         let iterable = MoveGen::new_legal(&board);
         let move_count = iterable.len();
@@ -36,24 +36,28 @@ impl Player for MinMaxEng {
         let mut valued_moves = HashMap::new();
         for next_move in iterable {
             let new_board = &board.make_move_new(next_move);
-            let result_my_move = inspect_move(&board, false);
+            let result_my_move = inspect_move(&board, &my_color, false);
 
             let opp_iterable = MoveGen::new_legal(new_board);
             let mut valued_opp_moves: HashMap<ChessMove, i32> = HashMap::new();
             for next_opp_move in opp_iterable {
                 let new_opp_board = new_board.make_move_new(next_opp_move);
-                let result_opp_move = inspect_move(&new_opp_board, true);
+                let result_opp_move = inspect_move(&new_opp_board, &my_color, true);
                 valued_opp_moves.insert(next_move, result_opp_move);
             }
 
-            let result_op_move = *valued_opp_moves.iter().max_by_key(|entry| entry.1)
-                .unwrap().1;
+            let result_op_move = valued_opp_moves.iter()
+                .max_by_key(|entry| entry.1);
+            let result_op = match result_op_move {
+                Some(result) => result.1,
+                None => &0,
+            };
             
-            let result = result_my_move - result_op_move;
+            let result = result_my_move - result_op;
             valued_moves.insert(next_move, result);
         }
         for (next_move, value) in valued_moves.iter() {
-            info!("move: {}, value: {}", next_move, value);
+            debug!("move: {}, value: {}", next_move, value);
         }
         let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
             .unwrap().0;
@@ -66,7 +70,7 @@ impl Player for MinMaxEng {
 pub struct CountingEng {}
 
 impl Player for CountingEng {
-    fn next_move(&self, game: &Game) -> Option<ChessMove> {
+    fn next_move(&self, game: &Game, my_color: Color) -> Option<ChessMove> {
         let board = game.current_position();
         let iterable = MoveGen::new_legal(&board);
         let move_count = iterable.len();
@@ -76,11 +80,11 @@ impl Player for CountingEng {
         let mut valued_moves = HashMap::new();
         for next_move in iterable {
             let new_board = &board.make_move_new(next_move);
-            let result = inspect_move(new_board, false);
+            let result = inspect_move(new_board, &my_color, false);
             valued_moves.insert(next_move, result);
         }
         for (next_move, value) in valued_moves.iter() {
-            info!("move: {}, value: {}", next_move, value);
+            debug!("move: {}, value: {}", next_move, value);
         }
         let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
             .unwrap().0;
@@ -89,13 +93,21 @@ impl Player for CountingEng {
     }
 }
 
-fn inspect_move(board: &Board, invert: bool) -> i32 {
-    let value_black = count_pieces(board, &Color::Black);
-    let value_white = count_pieces(board, &Color::White);
+fn get_other_color(color: &Color) -> Color {
+    match color {
+        Color::Black => Color::White,
+        Color::White => Color::Black
+    }
+}
+
+fn inspect_move(board: &Board, my_color: &Color, invert: bool) -> i32 {
+    let opp_color = get_other_color(&my_color);
+    let value_opp = count_pieces(board, &opp_color);
+    let value_mine = count_pieces(board, &my_color);
     let result: i32 = if invert {
-        value_black - value_white
+        value_opp - value_mine
     } else {
-        value_white - value_black
+        value_mine - value_opp
     };
     result
 }

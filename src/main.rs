@@ -1,9 +1,9 @@
 use std::str::FromStr;
+use std::{thread, time};
 
 use clap::{arg, command};
 
-
-use chess::{Game};
+use chess::{Game, Color};
 
 mod ui;
 mod engine;
@@ -57,15 +57,20 @@ fn main() {
     };
 
     while game.result().is_none() {
-        let next_move = player_white.next_move(&game);
+        println!();
+        ui::print_board(&game.current_position());
+
+        let next_move = player_white.next_move(&game, Color::White);
         if let Some(next_move) = next_move {
             game.make_move(next_move);
-            if let Some(next_move) = player_black.next_move(&game) {
+            if let Some(next_move) = player_black.next_move(&game, Color::Black) {
               game.make_move(next_move);
             } else {
                 break;
             }
         } 
+        let fivehundred_millis = time::Duration::from_millis(500);
+        thread::sleep(fivehundred_millis);
     }
     println!();
     ui::print_board(&game.current_position());

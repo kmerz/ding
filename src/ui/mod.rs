@@ -1,4 +1,4 @@
-use chess::{Board, Game, GameResult, ChessMove};
+use chess::{Board, Game, GameResult, ChessMove, Color};
 use std::io::{stdin,stdout,Write};
 use std::process::exit;
 
@@ -8,10 +8,7 @@ use crate::engine::Player;
 pub struct Human {}
 
 impl Player for Human {
-    fn next_move(&self, game: &Game) -> Option<ChessMove> {
-        println!();
-        print_board(&game.current_position());
-
+    fn next_move(&self, game: &Game, _my_color: Color) -> Option<ChessMove> {
         print!("> ");
         let input = read_str();
         let command = parse_command(input.as_str(), game);
