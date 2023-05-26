@@ -3,16 +3,16 @@ use std::{thread, time};
 
 use clap::{arg, command};
 
-use chess::{Game, Color};
+use chess::{Color, Game};
 
-mod ui;
 mod engine;
+mod ui;
 
 use crate::engine::Player;
 use crate::ui::Human;
 use engine::CountingEng;
-use engine::RandomEng;
 use engine::MinMaxEng;
+use engine::RandomEng;
 
 fn main() {
     env_logger::init();
@@ -39,17 +39,23 @@ fn main() {
     let default_white = "human".to_string();
     let default_black = "minmax".to_string();
 
-    let white = matches.get_one::<String>("white").unwrap_or(&default_white).as_str();
-    let black = matches.get_one::<String>("black").unwrap_or(&default_black).as_str();
+    let white = matches
+        .get_one::<String>("white")
+        .unwrap_or(&default_white)
+        .as_str();
+    let black = matches
+        .get_one::<String>("black")
+        .unwrap_or(&default_black)
+        .as_str();
 
-    let player_white: Box::<dyn Player> = match white {
+    let player_white: Box<dyn Player> = match white {
         "random" => Box::<RandomEng>::default(),
         "minmax" => Box::<MinMaxEng>::default(),
         "counting" => Box::<CountingEng>::default(),
         _ => Box::<Human>::default(),
     };
 
-    let player_black: Box::<dyn Player> = match black {
+    let player_black: Box<dyn Player> = match black {
         "random" => Box::<RandomEng>::default(),
         "minmax" => Box::<MinMaxEng>::default(),
         "human" => Box::<Human>::default(),
@@ -64,11 +70,11 @@ fn main() {
         if let Some(next_move) = next_move {
             game.make_move(next_move);
             if let Some(next_move) = player_black.next_move(&game, Color::Black) {
-              game.make_move(next_move);
+                game.make_move(next_move);
             } else {
                 break;
             }
-        } 
+        }
         let fivehundred_millis = time::Duration::from_millis(500);
         thread::sleep(fivehundred_millis);
     }

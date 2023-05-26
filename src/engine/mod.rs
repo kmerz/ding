@@ -1,14 +1,14 @@
-use chess::{Game, ChessMove, MoveGen, Board, ALL_SQUARES, Color, Piece};
-use std::collections::HashMap;
+use chess::{Board, ChessMove, Color, Game, MoveGen, Piece, ALL_SQUARES};
+use log::{debug, info};
 use rand::Rng;
-use log::{info, debug};
+use std::collections::HashMap;
 
 pub trait Player {
     fn next_move(&self, game: &Game, my_color: Color) -> Option<ChessMove>;
 }
 
 #[derive(Default)]
-pub struct RandomEng { }
+pub struct RandomEng {}
 
 impl Player for RandomEng {
     fn next_move(&self, game: &Game, _my_color: Color) -> Option<ChessMove> {
@@ -18,7 +18,13 @@ impl Player for RandomEng {
             return None;
         }
         let choosen_move_idx = rand::thread_rng().gen_range(0..move_count);
-        Some(iterable.enumerate().find(|c| c.0 == choosen_move_idx).unwrap().1)
+        Some(
+            iterable
+                .enumerate()
+                .find(|c| c.0 == choosen_move_idx)
+                .unwrap()
+                .1,
+        )
     }
 }
 
@@ -46,21 +52,19 @@ impl Player for MinMaxEng {
                 valued_opp_moves.insert(next_move, result_opp_move);
             }
 
-            let result_op_move = valued_opp_moves.iter()
-                .max_by_key(|entry| entry.1);
+            let result_op_move = valued_opp_moves.iter().max_by_key(|entry| entry.1);
             let result_op = match result_op_move {
                 Some(result) => result.1,
                 None => &0,
             };
-            
+
             let result = result_my_move - result_op;
             valued_moves.insert(next_move, result);
         }
         for (next_move, value) in valued_moves.iter() {
             debug!("move: {}, value: {}", next_move, value);
         }
-        let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
-            .unwrap().0;
+        let next_move = *valued_moves.iter().max_by_key(|entry| entry.1).unwrap().0;
         info!("next_move: {}", next_move);
         Some(next_move)
     }
@@ -86,8 +90,7 @@ impl Player for CountingEng {
         for (next_move, value) in valued_moves.iter() {
             debug!("move: {}, value: {}", next_move, value);
         }
-        let next_move = *valued_moves.iter().max_by_key(|entry| entry.1)
-            .unwrap().0;
+        let next_move = *valued_moves.iter().max_by_key(|entry| entry.1).unwrap().0;
         info!("next_move: {}", next_move);
         Some(next_move)
     }
@@ -96,7 +99,7 @@ impl Player for CountingEng {
 fn get_other_color(color: &Color) -> Color {
     match color {
         Color::Black => Color::White,
-        Color::White => Color::Black
+        Color::White => Color::Black,
     }
 }
 
@@ -118,7 +121,7 @@ fn count_pieces(board: &Board, color: &Color) -> i32 {
         if let Some(found_color) = board.color_on(*sq) {
             if found_color == *color {
                 if let Some(piece) = board.piece_on(*sq) {
-                    sum += lookup_value(&piece); 
+                    sum += lookup_value(&piece);
                 }
             }
         }

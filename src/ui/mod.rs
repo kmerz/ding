@@ -1,5 +1,5 @@
-use chess::{Board, Game, GameResult, ChessMove, Color};
-use std::io::{stdin,stdout,Write};
+use chess::{Board, ChessMove, Color, Game, GameResult};
+use std::io::{stdin, stdout, Write};
 use std::process::exit;
 
 use crate::engine::Player;
@@ -23,7 +23,7 @@ impl Player for Human {
         Some(next_move.unwrap())
     }
 }
- 
+
 #[derive(PartialEq)]
 pub enum Command {
     Success,
@@ -44,7 +44,7 @@ pub fn print_board(board: &Board) {
     print!("  A B C D E F G H\n8 ");
 
     const ROWS: i32 = 8;
-    let mut counter = 1; 
+    let mut counter = 1;
     let board_fen_string = board.to_string();
     let positions = board_fen_string.split(' ').next().unwrap();
     for position in positions.chars() {
@@ -55,7 +55,7 @@ pub fn print_board(board: &Board) {
             }
         } else if position == '/' {
             let row = ROWS - counter;
-            print!("\n{} ", row); 
+            print!("\n{} ", row);
             counter += 1;
         } else {
             let fig = lookup_figure(position);
@@ -80,15 +80,17 @@ fn lookup_figure(current: char) -> &'static str {
         'b' => "♝",
         'n' => "♞",
         'p' => "♟︎",
-        _ => "."
+        _ => ".",
     }
 }
 
 pub fn read_str() -> String {
     let mut input = String::new();
-    let _=stdout().flush();
+    let _ = stdout().flush();
 
-    stdin().read_line(&mut input).expect("Did not enter a correct string");
+    stdin()
+        .read_line(&mut input)
+        .expect("Did not enter a correct string");
     if let Some('\n') = input.chars().next_back() {
         input.pop();
     }
@@ -113,13 +115,11 @@ pub fn print_result(game: &Game) {
     }
 }
 
-
-
 pub fn parse_command(input: &str, game: &Game) -> Command {
     match input {
         "quit!" => exit(0),
         "print" => print_fen(game),
-        "help"  => print_help(),
+        "help" => print_help(),
         _ => Command::Unknown,
     }
 }
