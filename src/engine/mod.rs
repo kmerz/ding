@@ -1,3 +1,4 @@
+use log::{debug, info};
 use chess::{
     get_bishop_moves, get_knight_moves, get_rook_moves, BitBoard, Board, BoardStatus, ChessMove,
     Color, Game, Piece, Square, ALL_SQUARES,
@@ -76,13 +77,21 @@ fn inspect_move(board: &Board, my_color: &Color) -> i32 {
     let checkmate = match board.status() {
         BoardStatus::Ongoing => 0,
         BoardStatus::Stalemate => 0,
-        BoardStatus::Checkmate => 1000,
+        BoardStatus::Checkmate => 10000,
     };
 
-    let check = if is_check { 10 } else { 0 };
+    let check = if is_check { 1000 } else { 0 };
+
 
     let result = value_mine - value_opp + checkmate + check;
     result
+}
+
+fn color_to_str(color: Color) -> &'static str {
+    match color {
+        Color::White => "White",
+        Color::Black => "Black",
+    }
 }
 
 fn count_pieces(board: &Board, color: &Color) -> i32 {

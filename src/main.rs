@@ -76,7 +76,7 @@ fn main() {
                 break;
             }
         }
-        let break_time = time::Duration::from_millis(100);
+        let break_time = time::Duration::from_millis(500);
         thread::sleep(break_time);
     }
     println!();
