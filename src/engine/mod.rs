@@ -6,6 +6,7 @@ use chess::{
 pub mod counting;
 pub mod minmax;
 pub mod random;
+pub mod tree;
 
 pub trait Player {
     fn next_move(&self, game: &Game, my_color: Color) -> Option<ChessMove>;

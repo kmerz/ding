@@ -14,6 +14,7 @@ use crate::ui::Human;
 use engine::counting::CountingEng;
 use engine::minmax::MinMaxEng;
 use engine::random::RandomEng;
+use engine::tree::TreeEng;
 
 fn main() {
     env_logger::init();
@@ -21,9 +22,9 @@ fn main() {
     let matches = command!()
         .arg(arg!(-f --fen <String> "Start the game from a fen string")
              .required(false))
-        .arg(arg!(-w --white <String> "Choose between human, random, counting, minmax. Default is human")
+        .arg(arg!(-w --white <String> "Choose between human, random, counting, minmax, tree. Default is human")
              .required(false))
-        .arg(arg!(-b --black <String> "Choose between human, random, counting, minmax. Default is minmax")
+        .arg(arg!(-b --black <String> "Choose between human, random, counting, minmax, tree. Default is minmax")
              .required(false))
         .get_matches();
 
@@ -53,6 +54,7 @@ fn main() {
         "random" => Box::<RandomEng>::default(),
         "minmax" => Box::<MinMaxEng>::default(),
         "counting" => Box::<CountingEng>::default(),
+        "tree" => Box::<TreeEng>::default(),
         _ => Box::<Human>::default(),
     };
 
@@ -60,7 +62,8 @@ fn main() {
         "random" => Box::<RandomEng>::default(),
         "minmax" => Box::<MinMaxEng>::default(),
         "human" => Box::<Human>::default(),
-        _ => Box::<CountingEng>::default(),
+        "tree" => Box::<TreeEng>::default(),
+        _ => Box::<MinMaxEng>::default(),
     };
 
     while game.result().is_none() {
