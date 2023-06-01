@@ -1,4 +1,3 @@
-use log::{debug, info};
 use chess::{
     get_bishop_moves, get_knight_moves, get_rook_moves, BitBoard, Board, BoardStatus, ChessMove,
     Color, Game, Piece, Square, ALL_SQUARES,
@@ -31,16 +30,14 @@ fn is_check(board: &Board, color_to_move: &Color) -> bool {
     let mut is_check: bool = false;
     for square in *opp_pieces {
         is_check = match board.piece_on(square) {
-            Some(Piece::Rook) => is_check_with_fn(get_rook_moves, &board, &square, &king_square),
-            Some(Piece::Bishop) => {
-                is_check_with_fn(get_bishop_moves, &board, &square, &king_square)
-            }
+            Some(Piece::Rook) => is_check_with_fn(get_rook_moves, board, &square, &king_square),
+            Some(Piece::Bishop) => is_check_with_fn(get_bishop_moves, board, &square, &king_square),
             Some(Piece::Knight) => {
-                is_check_with_fn(get_knight_moves_blockers, &board, &square, &king_square)
+                is_check_with_fn(get_knight_moves_blockers, board, &square, &king_square)
             }
             Some(Piece::Queen) => {
-                is_check_with_fn(get_rook_moves, &board, &square, &king_square)
-                    || is_check_with_fn(get_bishop_moves, &board, &square, &king_square)
+                is_check_with_fn(get_rook_moves, board, &square, &king_square)
+                    || is_check_with_fn(get_bishop_moves, board, &square, &king_square)
             }
             None => false,
             _ => false,
@@ -82,9 +79,7 @@ fn inspect_move(board: &Board, my_color: &Color) -> i32 {
 
     let check = if is_check { 1000 } else { 0 };
 
-
-    let result = value_mine - value_opp + checkmate + check;
-    result
+    value_mine - value_opp + checkmate + check
 }
 
 fn color_to_str(color: Color) -> &'static str {

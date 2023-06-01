@@ -3,7 +3,7 @@ use log::{debug, info};
 use std::collections::HashMap;
 
 use crate::engine::Player;
-use crate::engine::{get_other_color, inspect_move, color_to_str};
+use crate::engine::{color_to_str, get_other_color, inspect_move};
 
 #[derive(Default)]
 pub struct MinMaxEng {}
@@ -44,7 +44,12 @@ impl Player for MinMaxEng {
         let next_move = *valued_moves.iter().max_by_key(|entry| entry.1).unwrap().0;
 
         let next_value = *valued_moves.iter().max_by_key(|entry| entry.1).unwrap().1;
-        info!("color: {}, next_move: {}: value: {}", color_to_str(my_color), next_move, next_value);
+        info!(
+            "color: {}, next_move: {}: value: {}",
+            color_to_str(my_color),
+            next_move,
+            next_value
+        );
 
         Some(next_move)
     }
