@@ -76,8 +76,8 @@ fn main() {
                 break;
             }
         }
-        let fivehundred_millis = time::Duration::from_millis(500);
-        thread::sleep(fivehundred_millis);
+        let break_time = time::Duration::from_millis(100);
+        thread::sleep(break_time);
     }
     println!();
     ui::print_board(&game.current_position());

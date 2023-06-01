@@ -19,7 +19,7 @@ impl Player for CountingEng {
         let mut valued_moves = HashMap::new();
         for next_move in iterable {
             let new_board = &board.make_move_new(next_move);
-            let result = inspect_move(new_board, &my_color, false);
+            let result = inspect_move(new_board, &my_color);
             valued_moves.insert(next_move, result);
         }
         for (next_move, value) in valued_moves.iter() {

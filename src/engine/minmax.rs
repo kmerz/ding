@@ -2,8 +2,8 @@ use chess::{ChessMove, Color, Game, MoveGen};
 use log::{debug, info};
 use std::collections::HashMap;
 
-use crate::engine::inspect_move;
 use crate::engine::Player;
+use crate::engine::{get_other_color, inspect_move};
 
 #[derive(Default)]
 pub struct MinMaxEng {}
@@ -19,13 +19,13 @@ impl Player for MinMaxEng {
         let mut valued_moves = HashMap::new();
         for next_move in iterable {
             let new_board = &board.make_move_new(next_move);
-            let result_my_move = inspect_move(&board, &my_color, false);
+            let result_my_move = inspect_move(&board, &my_color);
 
             let opp_iterable = MoveGen::new_legal(new_board);
             let mut valued_opp_moves: HashMap<ChessMove, i32> = HashMap::new();
             for next_opp_move in opp_iterable {
                 let new_opp_board = new_board.make_move_new(next_opp_move);
-                let result_opp_move = inspect_move(&new_opp_board, &my_color, true);
+                let result_opp_move = inspect_move(&new_opp_board, &get_other_color(&my_color));
                 valued_opp_moves.insert(next_move, result_opp_move);
             }
 
